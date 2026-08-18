@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión de Cultivos - AgroEcuador</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            --header-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --primary: #28365c;
+            --primary-hover: #2e92e3;
+            --primary-light: rgba(46, 146, 227, 0.08);
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: rgba(226, 232, 240, 0.8);
+            --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08);
+            --transition-smooth: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 340px;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            background: var(--bg-gradient);
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .navbar {
+            background: var(--header-gradient);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .logo {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .logo span { color: var(--primary-hover); }
+        
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        .main-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 1.5rem 2rem;
+            color: white;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .controls-bar {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 2rem;
+            position: sticky;
+            top: 60px; /* Debajo de navbar */
+            z-index: 99;
+            border-bottom: 1px solid var(--card-border);
+            display: flex;
+            align-items: center;
+        }
+
+/* Botón de Control del Menú Lateral */
+        .menu-toggle-btn {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .menu-toggle-btn:hover {
+            border-color: var(--primary-hover);
+            color: var(--primary-hover);
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .menu-toggle-btn.collapsed {
+            background: #f8fafc;
+            color: var(--text-muted);
+        }
+
+        /* Contenedor Principal (Flex Layout) */
+        .app-layout {
+            max-width: 1400px;
+            margin: 2.5rem auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2.5rem;
+            transition: gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Panel de Temas Izquierdo - EXPANDIDO POR DEFECTO */
+        .subjects-section {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                        min-width 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.25s ease, 
+                        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: sticky;
+            top: 180px;
+            align-self: start;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        /* Clase de colapso en escritorio */
+        .app-layout.sidebar-collapsed .subjects-section {
+            width: 0px;
+            min-width: 0px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateX(-20px);
+        }
+
+        .app-layout.sidebar-collapsed {
+            gap: 0;
+        }
+
+        /* Buscador DENTRO del menú */
+        .sidebar-search-container {
+            margin-bottom: 1.5rem;
+            position: relative;
+        }
+
+        .sidebar-search-container input {
+            width: 100%;
+            padding: 12px 16px 12px 40px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 0.9rem;
+            outline: none;
+            transition: var(--transition-smooth);
+            background: #ffffff;
+        }
+
+        .sidebar-search-container input:focus {
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 4px var(--primary-light);
+        }
+
+        .search-icon-inline {
+            position: absolute;
+            left: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            pointer-events: none;
+        }
+
+        /* Estilo original de tarjetas de menú */
+        .subject-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 12px 16px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            border: 1px solid var(--card-border);
+            margin-bottom: 10px;
+            box-shadow: var(--shadow-sm);
+        }
+        .subject-card:hover { transform: translateX(5px); border-color: var(--primary-hover); }
+        .subject-card.active { 
+            background: var(--header-gradient); 
+            color: white; 
+            border-color: #0f172a; 
+            box-shadow: var(--shadow-md);
+        }
+
+        .subject-badge {
+            background: #f1f5f9;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.65rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+        }
+        .subject-card.active .subject-badge { background: rgba(255,255,255,0.15); color: white; }
+
+        .info-content-area {
+            flex: 1;
+            padding: 3rem 4rem;
+            transition: var(--transition-smooth);
+            background: #ffffff;
+        }
+
+        .crop-hero { margin-bottom: 3.5rem; }
+        .crop-type { 
+            color: var(--primary-hover); 
+            font-weight: 800; 
+            font-size: 0.85rem; 
+            text-transform: uppercase; 
+            letter-spacing: 2px;
+            margin-bottom: 0.75rem;
+            display: block;
+        }
+        .crop-main-title { 
+            font-size: 3rem; 
+            font-weight: 700; 
+            letter-spacing: -2px; 
+            line-height: 0.9; 
+            margin-bottom: 2rem; 
+            color: var(--text-dark);
+        }
+        .crop-description { 
+            font-size: 1.25rem; 
+            color: var(--text-muted); 
+            max-width: 850px; 
+            line-height: 1.7; 
+            font-weight: 400;
+        }
+
+        .data-strip {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin: 3.5rem 0;
+            padding: 2.5rem 0;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        .data-point h4 { font-size: 0.7rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 0.5rem; letter-spacing: 1px; }
+        .data-point p { font-weight: 700; font-size: 1.2rem; color: var(--primary); }
+
+        .content-section { margin-bottom: 4.5rem; max-width: 900px; }
+        .content-section h3 { 
+            font-size: 1.75rem; 
+            font-weight: 800; 
+            margin-bottom: 1.5rem; 
+            display: flex; 
+            align-items: center; 
+            gap: 15px;
+            color: var(--text-dark);
+        }
+        .content-section p { font-size: 1.15rem; color: #475569; line-height: 1.9; }
+        
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 990;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Responsivo / Movilidad */
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 0 1.5rem;
+            }
+
+            .subjects-section {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 300px;
+                min-width: 300px;
+                background: #ffffff;
+                z-index: 1000;
+                padding: 2rem 1.5rem;
+                box-shadow: 20px 0 40px rgba(15, 23, 42, 0.15);
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                visibility: hidden;
+                opacity: 0;
+            }
+
+            .close-mobile-menu {
+                display: flex;
+            }
+
+            .app-layout.sidebar-open .subjects-section {
+                transform: translateX(0);
+                visibility: visible;
+                opacity: 1;
+            }
+
+            .sidebar-backdrop.show {
+                display: block;
+                opacity: 1;
+            }
+
+        }
+
+        @media (max-width: 640px) {
+            .main-header {
+                padding: 1.25rem 1rem;
+            }
+
+            .app-layout {
+                padding: 0 1rem;
+                margin: 1.5rem auto;
+            }
+
+            .pdfs-section {
+                padding: 1.5rem;
+            }
+
+            .pdf-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .logo-area {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo desenfocado móvil -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+    
+    <!-- Contenedor para Notificaciones -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">🌾 Agro<span>Ecuador</span></a>
+        <div class="nav-links">
+            <a href="index.html">Inicio</a>
+            <a href="cultivos.html" class="active">Cultivos</a>
+            <a href="enfermedades.html">Enfermedades</a>
+            <a href="biblioteca_digital_de_agronom_a.html">Biblioteca</a>
+        </div>    </nav>
+
+    <div class="main-header">
+        <div style="max-width: 1440px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center;">
+            <div>
+                <p style="text-transform: uppercase; font-size: 0.65rem; letter-spacing: 3px; opacity: 0.6; font-weight: 700;">Panel de Control</p>
+                <h1 style="font-size: 1.5rem; font-weight: 800;">Manejo Técnico de Cultivos</h1>
+            </div>
+        </div>
+    </div>
+
+    <!-- Barra de control para el toggle -->
+    <div class="controls-bar">
+        <button id="menuToggleBtn" class="menu-toggle-btn" title="Alternar menú lateral">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
+                <line x1="3" y1="12" x2="21" y2="12"></line>
+                <line x1="3" y1="6" x2="21" y2="6"></line>
+                <line x1="3" y1="18" x2="21" y2="18"></line>
+            </svg>
+        </button>
+        <span style="margin-left: 1rem; font-size: 0.85rem; font-weight: 600; color: var(--text-muted);" id="currentCropBreadcrumb">Cargando...</span>
+    </div>
+
+    <!-- Diseño de la Aplicación con sidebar-expanded activa por defecto en pantallas de escritorio -->
+    <div class="app-layout sidebar-expanded" id="appLayout">
+        <div class="subjects-section" id="subjectsSection">
+            <div class="sidebar-search-container">
+                <span class="search-icon-inline">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </span>
+                <input type="text" id="cropSearch" placeholder="Buscar cultivo..." oninput="filterCrops()">
+            </div>
+
+            <h2 style="font-size: 0.75rem; text-transform: uppercase; color: var(--text-muted); margin-bottom: 1rem; letter-spacing: 1.5px; font-weight: 800;">Lista de Cultivos</h2>
+            <div id="cropsList"></div>
+        </div>
+
+        <main class="info-content-area" id="mainContent">
+            <!-- El contenido dinámico se inyecta aquí -->
+        </main>
+    </div>
+
+    <script>
+        const CULTIVOS = [
+            {
+                id: "tomate de árbol",
+                nombre: "Tomate de árbol",
+                nombre2: "Solanum Betaceum",
+                categoria: "Frutales",
+                resumen: "Solanacea de la especie solanacea betaceum posee un metabolismo C3",
+                suelo: "Prefiere suelos aluviales, profundos y con drenaje eficiente. El pH óptimo se sitúa entre 5.8 y 6.5. Es vital realizar calicatas periódicas para monitorear la salud radicular.",
+                manejo: "El desije es la labor que determina la producción futura. Se debe seleccionar un hijo seguidor vigoroso y bien posicionado para mantener la línea de siembra.",
+                cosecha: "Se realiza bajo estrictas normas de calidad, midiendo el grado (calibre) y longitud. El enfunde es esencial para proteger la fruta de daños mecánicos e insectos.",
+                datos: { temp: "25°C - 29°C", agua: "2,500 mm", densidad: "1,400 pl/ha", mercado: "Global" }
+            },
+            {
+                id: "cacao",
+                nombre: "Cacao CCN-51",
+                categoria: "Exportación",
+                resumen: "Variedad de alta productividad y resistencia, clave para la industria chocolatera masiva. Requiere un manejo intensivo de podas para prevenir enfermedades fúngicas.",
+                suelo: "Suelos con alto contenido de materia orgánica y buena porosidad. No tolera encharcamientos prolongados que favorecen la pudrición de raíz.",
+                manejo: "La poda es fundamental: de formación en los primeros años y de mantenimiento después para asegurar la entrada de luz y ventilación al centro del árbol.",
+                cosecha: "Recolección manual selectiva de mazorcas maduras. El proceso de fermentación de 5 días es crítico para desarrollar los precursores del sabor.",
+                datos: { temp: "24°C - 27°C", agua: "1,800 mm", densidad: "1,111 pl/ha", mercado: "Masa" }
+            },
+            {
+                id: "maiz",
+                nombre: "Maíz Amarillo Duro",
+                categoria: "Ciclo Corto",
+                resumen: "Cultivo estratégico para la soberanía alimentaria nacional. Se cultiva principalmente en las zonas de secano y zonas con riego tecnificado en la costa.",
+                suelo: "Suelos de textura franca con buena capacidad de retención de humedad. Requiere una cama de siembra bien preparada mediante labranza mínima.",
+                manejo: "Control temprano de malezas y fertilización nitrogenada fraccionada. El monitoreo del 'cogollero' es esencial durante las primeras 6 semanas.",
+                cosecha: "Mecanizada cuando el grano alcanza un 18-20% de humedad, procediendo al secado inmediato hasta el 13% para almacenamiento seguro.",
+                datos: { temp: "22°C - 32°C", agua: "600 mm", densidad: "68,000 pl/ha", mercado: "Local" }
+            },
+            {
+                id: "cafe",
+                nombre: "Café Arábigo",
+                categoria: "Altura",
+                resumen: "Cultivo de especialidad con gran potencial en las estribaciones de la cordillera. Se enfoca en la calidad de taza y la sostenibilidad ambiental.",
+                suelo: "Suelos volcánicos ricos en potasio, con buen drenaje natural y alto contenido de materia orgánica.",
+                manejo: "Manejo bajo sombra regulada para mejorar la calidad del grano. El control de la 'broca' se realiza mediante trampas y control biológico.",
+                cosecha: "Cosecha manual (picking) seleccionando únicamente los cerezos 'uva' maduros. El beneficio húmedo debe ser riguroso.",
+                datos: { temp: "18°C - 22°C", agua: "1,500 mm", densidad: "4,000 pl/ha", mercado: "Especialidad" }
+            }
+        ];
+
+        let activeId = "tomate de árbol";
+
+        // Elementos del menú colapsable
+        const menuToggleBtn = document.getElementById("menuToggleBtn");
+        const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
+        // Helper: Evitar XSS en salidas HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+
+        function renderMenu(list = CULTIVOS) {
+            const container = document.getElementById('cropsList');
+            container.innerHTML = list.map(c => `
+                <div class="subject-card ${c.id === activeId ? 'active' : ''}" onclick="selectCrop('${c.id}')">
+                    <span style="font-weight:700; font-size: 0.9rem;">${c.nombre}</span>
+                    <span class="subject-badge">${c.categoria}</span>
+                </div>
+            `).join('');
+        }
+
+        // Alternar visualización del menú lateral
+        function toggleSidebar() {
+            const isMobile = window.innerWidth <= 1024;
+            if (isMobile) {
+                // Comportamiento móvil: Drawer deslizante
+                const isOpen = appLayout.classList.toggle("sidebar-open");
+                if (isOpen) {
+                    sidebarBackdrop.classList.add("show");
+                    document.body.style.overflow = "hidden";
+                } else {
+                    sidebarBackdrop.classList.remove("show");
+                    document.body.style.overflow = "";
+                }
+            } else {
+                // Comportamiento de Escritorio: Mostrar/ocultar expandiendo clase
+                const isExpanded = appLayout.classList.toggle("sidebar-expanded");
+                if (isExpanded) {
+                    menuToggleBtn.classList.remove("collapsed");
+                } else {
+                    menuToggleBtn.classList.add("collapsed");
+                }
+            }
+        }
+
+        function closeSidebarMobile() {
+            appLayout.classList.remove("sidebar-open");
+            sidebarBackdrop.classList.remove("show");
+            document.body.style.overflow = "";
+        }
+        
+        function selectCrop(id) {
+            activeId = id;
+            renderMenu();
+            const crop = CULTIVOS.find(c => c.id === id);
+            const display = document.getElementById('mainContent');
+            const breadcrumb = document.getElementById('currentCropBreadcrumb');
+
+            breadcrumb.innerText = `Cultivos / ${crop.nombre}`;
+
+            display.innerHTML = `
+                <div class="crop-hero">
+                    <span class="crop-type">${crop.categoria}</span>
+                    <h2 class="crop-main-title">${crop.nombre}-
+                    <i class="crop-main-title">${crop.nombre2}</i>
+                    </h2>
+                    <p class="crop-description">${crop.resumen}</p>
+                </div>
+
+                <div class="data-strip">
+                    <div class="data-point"><h4>Rango Térmico</h4><p>${crop.datos.temp}</p></div>
+                    <div class="data-point"><h4>Precipitación</h4><p>${crop.datos.agua}</p></div>
+                    <div class="data-point"><h4>Densidad Sugerida</h4><p>${crop.datos.densidad}</p></div>
+                    <div class="data-point"><h4>Enfoque Comercial</h4><p>${crop.datos.mercado}</p></div>
+                </div>
+
+                <section class="content-section">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+                        Condiciones de Suelo y Preparación
+                    </h3>
+                    <p>${crop.suelo}</p>
+                </section>
+
+                <section class="content-section">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg>
+                        Estrategia de Manejo y Labores
+                    </h3>
+                    <p>${crop.manejo}</p>
+                </section>
+
+                <section class="content-section">
+                    <h3>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="7.5 4.21 12 6.81 16.5 4.21"/><polyline points="7.5 19.79 7.5 14.6 3 12"/><polyline points="21 12 16.5 14.6 16.5 19.79"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                        Cosecha y Control de Calidad
+                    </h3>
+                    <p>${crop.cosecha}</p>
+                </section>
+            `;
+            
+            // En móvil cerramos el menú automáticamente tras seleccionar
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function filterCrops() {
+            const term = document.getElementById('cropSearch').value.toLowerCase();
+            const filtered = CULTIVOS.filter(c => 
+                c.nombre.toLowerCase().includes(term) || 
+                c.categoria.toLowerCase().includes(term)
+            );
+            renderMenu(filtered);
+        }
+
+        window.onload = () => {
+            renderMenu();
+            selectCrop(activeId);
+        };
+// Eventos de control de colapso / sidebar
+        menuToggleBtn.addEventListener('click', toggleSidebar);
+        sidebarBackdrop.addEventListener('click', closeSidebarMobile);
+
+        window.addEventListener('resize', () => {
+            if (window.innerWidth > 1024) {
+                closeSidebarMobile();
+            }
+        });
+
+    </script>
+</body>
+</html>

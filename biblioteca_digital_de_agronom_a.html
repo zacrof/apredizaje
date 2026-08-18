@@ -1,0 +1,1239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>E-Book Library - Agronomía</title>
+    <!-- Google Fonts para una tipografía ultra limpia -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Variables de diseño unificadas */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            --header-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --primary: #28365c;
+            --primary-hover: #2e92e3;
+            --primary-light: rgba(46, 146, 227, 0.08);
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: rgba(226, 232, 240, 0.8);
+            --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.08), 0 8px 16px -6px rgba(15, 23, 42, 0.04);
+            --shadow-lg: 0 20px 40px -10px rgba(15, 23, 42, 0.12);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            --sidebar-width: 320px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: var(--bg-gradient);
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
+
+        /* Barra de desplazamiento mejorada */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 99px;
+            border: 2px solid #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--text-muted);
+        }
+
+        /* Navegación Superior Unificada */
+        .navbar {
+            background: var(--header-gradient);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--primary-hover);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Cabecera de la Sección */
+        .main-header {
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .main-header::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 400px;
+            height: 400px;
+            background: radial-gradient(circle, rgba(46,146,227,0.1) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1.5rem;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .logo-icon {
+            background: rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            width: 48px;
+            height: 48px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .logo-text h1 {
+            font-size: 1.6rem;
+            font-weight: 800;
+            letter-spacing: -0.025em;
+            color: #ffffff;
+        }
+
+        .logo-text p {
+            color: #94a3b8;
+            font-size: 0.8rem;
+            font-weight: 500;
+            margin-top: 2px;
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        /* Buscador Sticky */
+        .search-bar-section {
+            background: rgba(255, 255, 255, 0.8);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(226, 232, 240, 0.8);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 73px; /* Justo debajo de la navbar */
+            z-index: 100;
+            transition: var(--transition-smooth);
+        }
+
+        .search-container-global {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        /* Botón de Control del Menú Lateral */
+        .menu-toggle-btn {
+            background: #ffffff;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 14px;
+            width: 48px;
+            height: 48px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .menu-toggle-btn:hover {
+            border-color: var(--primary-hover);
+            color: var(--primary-hover);
+            background: var(--primary-light);
+            transform: scale(1.05);
+        }
+
+        .menu-toggle-btn.collapsed {
+            background: #f8fafc;
+            color: var(--text-muted);
+        }
+
+        .search-wrapper {
+            flex: 1;
+            position: relative;
+        }
+
+        .search-wrapper input {
+            width: 100%;
+            padding: 14px 24px 14px 54px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 16px;
+            font-size: 0.95rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            outline: none;
+            background: #ffffff;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .search-wrapper input:focus {
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 4px rgba(46, 146, 227, 0.12), var(--shadow-md);
+            transform: translateY(-1px);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            transition: var(--transition-smooth);
+        }
+
+        .search-wrapper input:focus + .search-icon {
+            color: var(--primary-hover);
+        }
+
+        .search-controls {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .clear-search-btn {
+            background: #f1f5f9;
+            border: none;
+            border-radius: 12px;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: var(--transition-smooth);
+            color: var(--text-muted);
+        }
+
+        .clear-search-btn:hover {
+            background: #e2e8f0;
+            color: var(--text-dark);
+            transform: scale(1.05);
+        }
+
+        .search-stats {
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            background: #f1f5f9;
+            padding: 10px 18px;
+            border-radius: 12px;
+            white-space: nowrap;
+            border: 1px solid rgba(226, 232, 240, 0.8);
+            box-shadow: var(--shadow-sm);
+        }
+
+        /* Contenedor Principal (Flex Layout) */
+        .app-layout {
+            max-width: 1400px;
+            margin: 2.5rem auto;
+            padding: 0 2rem;
+            display: flex;
+            gap: 2.5rem;
+            transition: gap 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        /* Panel de Temas Izquierdo - EXPANDIDO POR DEFECTO */
+        .subjects-section {
+            width: var(--sidebar-width);
+            min-width: var(--sidebar-width);
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            transition: width 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                        min-width 0.35s cubic-bezier(0.4, 0, 0.2, 1), 
+                        opacity 0.25s ease, 
+                        transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+            position: sticky;
+            top: 180px;
+            align-self: start;
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+            transform: translateX(0);
+        }
+
+        /* Clase de colapso en escritorio */
+        .app-layout.sidebar-collapsed .subjects-section {
+            width: 0px;
+            min-width: 0px;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transform: translateX(-20px);
+        }
+
+        .app-layout.sidebar-collapsed {
+            gap: 0;
+        }
+
+        .section-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .section-title h2 {
+            font-size: 1.15rem;
+            font-weight: 800;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .close-mobile-menu {
+            display: none;
+            background: #f1f5f9;
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            cursor: pointer;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-dark);
+        }
+
+        .subjects-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .subject-card {
+            background: var(--card-bg);
+            border-radius: 16px;
+            padding: 14px 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+            border: 1px solid var(--card-border);
+        }
+
+        .subject-card:hover {
+            transform: translateX(4px);
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow-md);
+        }
+
+        .subject-card.active {
+            background: var(--header-gradient);
+            color: white;
+            border-color: #0f172a;
+            box-shadow: var(--shadow-md);
+        }
+
+        .subject-card.active:hover {
+            transform: none;
+        }
+
+        .subject-name {
+            font-weight: 700;
+            font-size: 0.95rem;
+            color: #334155;
+            transition: var(--transition-smooth);
+        }
+
+        .subject-card.active .subject-name {
+            color: white;
+        }
+
+        .subject-badge {
+            background: #f8fafc;
+            padding: 6px 12px;
+            border-radius: 10px;
+            font-size: 0.75rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            border: 1px solid #e2e8f0;
+            transition: var(--transition-smooth);
+        }
+
+        .subject-card.active .subject-badge {
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        /* Sección Derecha de Documentos */
+        .pdfs-section {
+            flex: 1;
+            min-width: 0;
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 2.25rem;
+            box-shadow: var(--shadow-md);
+            border: 1px solid var(--card-border);
+            min-height: 500px;
+            transition: var(--transition-smooth);
+        }
+
+        .pdf-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.25rem;
+            border-bottom: 1px solid #f1f5f9;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .pdf-header-info {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .pdf-header h3 {
+            font-size: 1.35rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.02em;
+        }
+
+        .pdf-count {
+            background: var(--primary-light);
+            color: var(--primary-hover);
+            padding: 6px 14px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 700;
+        }
+
+        .pdf-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        /* Tarjeta de Documento */
+        .pdf-card {
+            background: #ffffff;
+            border-radius: 18px;
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            transition: var(--transition-smooth);
+            display: flex;
+            flex-direction: column;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            opacity: 0;
+            transform: translateY(15px);
+            animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .pdf-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary-hover);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .pdf-card:hover {
+            transform: translateY(-5px);
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .pdf-card:hover::after {
+            opacity: 1;
+        }
+
+        .pdf-icon-wrapper {
+            background: var(--primary-light);
+            border: 1.5px solid rgba(46, 146, 227, 0.15);
+            width: 50px;
+            height: 50px;
+            border-radius: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.25rem;
+            color: var(--primary-hover);
+            transition: var(--transition-smooth);
+        }
+
+        .pdf-card:hover .pdf-icon-wrapper {
+            background: var(--primary-hover);
+            color: white;
+            border-color: var(--primary-hover);
+            transform: scale(1.05);
+        }
+
+        .pdf-title {
+            font-weight: 700;
+            font-size: 1rem;
+            color: var(--text-dark);
+            line-height: 1.4;
+            margin-bottom: 0.5rem;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            height: 2.8rem;
+        }
+
+        .pdf-description {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+            margin-bottom: 1.5rem;
+            flex: 1;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .pdf-meta {
+            font-size: 0.7rem;
+            color: var(--text-muted);
+            border-top: 1px solid #f1f5f9;
+            padding-top: 1rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .pdf-date {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-weight: 500;
+        }
+
+        .pdf-subject-badge {
+            background: #f1f5f9;
+            padding: 4px 10px;
+            border-radius: 8px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            color: var(--text-dark);
+            border: 1px solid #e2e8f0;
+        }
+
+        /* Estados vacíos */
+        .empty-state {
+            text-align: center;
+            padding: 5rem 2rem;
+            background: #fafafa;
+            border-radius: 20px;
+            color: var(--text-muted);
+            border: 2px dashed #e2e8f0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+        }
+
+        .empty-state svg {
+            color: #cbd5e1;
+            width: 48px;
+            height: 48px;
+        }
+
+        .empty-state h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+        }
+
+        /* Notificaciones */
+        .toast-container {
+            position: fixed;
+            bottom: 24px;
+            right: 24px;
+            z-index: 1000;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            pointer-events: none;
+        }
+
+        .toast-notification {
+            background: #1e293b;
+            color: white;
+            padding: 14px 20px;
+            border-radius: 12px;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            font-size: 0.85rem;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            pointer-events: auto;
+            transform: translateY(100px);
+            opacity: 0;
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            max-width: 320px;
+        }
+
+        .toast-notification.show {
+            transform: translateY(0);
+            opacity: 1;
+        }
+
+        .sidebar-backdrop {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(15, 23, 42, 0.3);
+            backdrop-filter: blur(4px);
+            -webkit-backdrop-filter: blur(4px);
+            z-index: 990;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+
+        /* Responsivo / Movilidad */
+        @media (max-width: 1024px) {
+            .app-layout {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+                padding: 0 1.5rem;
+            }
+
+            .subjects-section {
+                position: fixed;
+                top: 0;
+                left: 0;
+                height: 100vh;
+                width: 300px;
+                min-width: 300px;
+                background: #ffffff;
+                z-index: 1000;
+                padding: 2rem 1.5rem;
+                box-shadow: 20px 0 40px rgba(15, 23, 42, 0.15);
+                transform: translateX(-100%);
+                transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+                visibility: hidden;
+                opacity: 0;
+            }
+
+            .close-mobile-menu {
+                display: flex;
+            }
+
+            .app-layout.sidebar-open .subjects-section {
+                transform: translateX(0);
+                visibility: visible;
+                opacity: 1;
+            }
+
+            .sidebar-backdrop.show {
+                display: block;
+                opacity: 1;
+            }
+
+            .search-bar-section {
+                top: 73px;
+            }
+        }
+
+        @media (max-width: 640px) {
+            .main-header {
+                padding: 1.25rem 1rem;
+            }
+
+            .search-bar-section {
+                padding: 1rem;
+            }
+
+            .app-layout {
+                padding: 0 1rem;
+                margin: 1.5rem auto;
+            }
+
+            .pdfs-section {
+                padding: 1.5rem;
+            }
+
+            .pdf-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .header-content {
+                justify-content: center;
+                text-align: center;
+            }
+
+            .logo-area {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Fondo desenfocado móvil -->
+    <div id="sidebarBackdrop" class="sidebar-backdrop"></div>
+
+    <!-- Contenedor para Notificaciones -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <!-- Menú de Navegación Profesional Unificado -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            🌾 Agro<span>Ecuador</span>
+        </a>
+        <div class="nav-links">
+            <a href="index.html">Inicio</a>
+            <a href="cultivos.html">Cultivos</a>
+            <a href="enfermedades.html">Enfermedades</a>
+            <a href="biblioteca_digital_de_agronom_a.html" class="active">Biblioteca</a>
+        </div>
+    </nav>
+
+    <!-- Encabezado de la Aplicación -->
+    <div class="main-header">
+        <div class="header-content">
+            <div class="logo-area">
+                <div class="logo-icon">📖</div>
+                <div class="logo-text">
+                    <h1>Biblioteca Digital</h1>
+                    <p>Facultad de Agronomía</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Buscador Avanzado Estacionario y Controles de Menú -->
+    <div class="search-bar-section" id="stickySearch">
+        <div class="search-container-global">
+            <!-- Botón interactivo - Abierto por defecto en escritorio -->
+            <button id="menuToggleBtn" class="menu-toggle-btn" title="Alternar materias">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="search-wrapper">
+                <div class="search-icon">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                </div>
+                <input type="text" id="globalSearchInput" placeholder="Buscar por título, materias o descripción..." autocomplete="off">
+            </div>
+            <div class="search-controls">
+                <button id="globalClearSearchBtn" class="clear-search-btn" title="Limpiar búsqueda">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+                <span id="globalSearchStats" class="search-stats">0 documentos</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Diseño de la Aplicación con sidebar-expanded activa por defecto en pantallas de escritorio -->
+    <div class="app-layout sidebar-expanded" id="appLayout">
+        <!-- Panel de navegación izquierdo: Materias (Activo inicialmente en desktop) -->
+        <div class="subjects-section" id="subjectsSection">
+            <div class="section-title">
+                <h2>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                    Materias
+                </h2>
+                <!-- Botón de cierre para versión móvil/drawer -->
+                <button id="closeMobileMenu" class="close-mobile-menu" title="Cerrar menú">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div id="subjectsGrid" class="subjects-grid"></div>
+        </div>
+
+        <!-- Panel de resultados derecho: PDFs -->
+        <div class="pdfs-section">
+            <div class="pdf-header">
+                <div class="pdf-header-info">
+                    <h3 id="currentSubjectTitle">Selecciona una materia</h3>
+                </div>
+                <span class="pdf-count" id="pdfCountSpan">0 documentos</span>
+            </div>
+            <div id="pdfGridContainer" class="pdf-grid"></div>
+        </div>
+    </div>
+
+    <script>
+        // ===================== BASE DE DATOS LOCAL =====================
+        const MATERIAS_MANUALES = [
+            "Estadística",
+            "Fito-Vegetal",
+            "Fisio-Vegetal",
+            "Suelos"
+        ];
+
+        const PDFS_MANUALES = [
+            // Estadística
+            { nombre: "Estadística", materia: "Estadística", url: "Agronomia/Estadistica.pdf", descripcion: "Introducción a la probabilidad, análisis de gráficos, cálculo de media, mediana e inferencias." },
+            { nombre: "Estadística para administración y economía", materia: "Estadística", url: "Agronomia/Estadística-para-administración-y-economia-Richard-I.-Levin.pdf", descripcion: "Métodos y aplicaciones estadísticas avanzadas con enfoque práctico de Richard I. Levin." },
+            { nombre: "Diseño y análisis de experimentos", materia: "Estadística", url: "Agronomia/Diseño y analisis de experimentos _Douglas-C-Montgomery.pdf", descripcion: "Guía metodológica para la planificación, análisis e interpretación estadística de pruebas experimentales." },
+            { nombre: "Probabilidad y Estadística - Aplicaciones y Métodos", materia: "Estadística", url: "Agronomia/Probabilidad_y_Estadística-Aplicaciones_y_Metodos__George.Canavos_1988_McGraw-Hill.pdf", descripcion: "Teoría clásica de probabilidades, modelos matemáticos y distribuciones de George Canavos." },
+
+            // Fito-Vegetal
+            { nombre: "Plant Pathology (2024)", materia: "Fito-Vegetal", url: "Agronomia/Agrios’ Plant Pathology (2024).pdf", descripcion: "Referencia fundamental sobre patologías vegetales, diagnóstico, causas y tratamiento moderno de enfermedades." },
+            { nombre: "Enfermedades de las plantas", materia: "Fito-Vegetal", url: "Agronomia/Enfermadades de las plantas.pdf", descripcion: "Clasificación de agentes patógenos, desarrollo de epidemias y manejo integrado de cultivos afectados." },
+            { nombre: "Fitopatología - (Manual de prácticas)", materia: "Fito-Vegetal", url: "Agronomia/Fitopatologia-(Manual de practicas).pdf", descripcion: "Manual experimental de laboratorio y campo para identificación de hongos, bacterias y virus." },
+            { nombre: "Fitopatología de G.N. Agrios", materia: "Fito-Vegetal", url: "Agronomia/Libro-de-Fitopatologia-de-G.-N.-Agrios.pdf", descripcion: "Edición clásica completa del estudio de interacciones patógeno-hospedante y fisiología de la infección." },
+
+            // Fisio-Vegetal
+            { nombre: "BBCH-Skala (Español)", materia: "Fisio-Vegetal", url: "Agronomia/BBCH-Skala_spanisch.pdf", descripcion: "Codificación y escalas estandarizadas de los estadios de crecimiento de los cultivos agrícolas." },
+            { nombre: "Bioquímica - Mathews", materia: "Fisio-Vegetal", url: "Agronomia/BIOQUIMICA - MATHEWS 3ra edición.pdf", descripcion: "Fundamentos bioquímicos a nivel molecular, procesos energéticos y metabolismo celular." },
+            { nombre: "Biología General", materia: "Fisio-Vegetal", url: "Agronomia/Campbell y Reece Biologia General.pdf", descripcion: "Tratado de Campbell & Reece sobre los principios biológicos de la vida vegetal y animal." },
+            { nombre: "Fisiología Vegetal Vol. I", materia: "Fisio-Vegetal", url: "Agronomia/FisiologiavegetalVolIenespañol-Taiz.pdf", descripcion: "Volumen primero de Lincoln Taiz. Procesos de transporte de agua, nutrición y fotosíntesis." },
+            { nombre: "Fisiología Vegetal Vol. II", materia: "Fisio-Vegetal", url: "Agronomia/FisiologiaVegetalVolumenII espanhol.pdf", descripcion: "Volumen segundo. Crecimiento vegetal, fitohormonas y respuestas al estrés ambiental." },
+            { nombre: "Fundamentos de Fisiología Vegetal", materia: "Fisio-Vegetal", url: "Agronomia/FundamentosdeFisiologiaVegetal2008Azcon.pdf", descripcion: "Texto didáctico de Joaquín Azcón-Bieto y Manuel Talón centrado en el funcionamiento vegetal." },
+            { nombre: "Química Agrícola", materia: "Fisio-Vegetal", url: "Agronomia/Quimica_Agricola_ver02.pdf", descripcion: "Estudio químico de fertilizantes, pesticidas, hormonas y química orgánica aplicada al suelo." },
+            { nombre: "Química Raymond Chang", materia: "Fisio-Vegetal", url: "Agronomia/Quimica_Raymond_Chang_11va_Edicion.pdf", descripcion: "Solucionario académico básico y avanzado de química general de Raymond Chang." },
+
+            // Suelos
+            { nombre: "Fertilidad del suelo y nutrición", materia: "Suelos", url: "Agronomia/FERTILIDAD DEL SUELO Y NUTRICION.pdf", descripcion: "Principios de fertilización, asimilación de nutrientes e interacciones químicas en el perfil del suelo." },
+            { nombre: "Guía descripción de suelos FAO", materia: "Suelos", url: "Agronomia/Guia_descripcion_suelos_FAO2009.pdf", descripcion: "Estándares internacionales de la FAO para el levantamiento de perfiles y caracterización de horizontes." },
+            { nombre: "Introducción a suelos", materia: "Suelos", url: "Agronomia/Introduccion a suelos.pdf", descripcion: "Conceptos iniciales de edafología, física de suelos, porosidad, textura y retención hídrica." },
+            { nombre: "Génesis, evolución y propiedades físico-químicas del suelo", materia: "Suelos", url: "Agronomia/Génesis, evolución y propiedades físico químicas del suelo.pdf", descripcion: "Factores de formación edáfica, procesos geoquímicos y dinámicas de suelos." }
+        ];
+
+        // ===================== GESTIÓN DE ESTADO =====================
+        let currentSubject = null;
+        let isGlobalSearch = false;
+        let currentSearchTerm = "";
+
+        const materias = [...MATERIAS_MANUALES];
+        const pdfs = PDFS_MANUALES.map(p => ({ ...p, id: Math.random() }));
+
+        // Elementos DOM
+        const appLayout = document.getElementById("appLayout");
+        const subjectsGrid = document.getElementById("subjectsGrid");
+        const currentSubjectTitle = document.getElementById("currentSubjectTitle");
+        const pdfCountSpan = document.getElementById("pdfCountSpan");
+        const pdfGridContainer = document.getElementById("pdfGridContainer");
+        const globalSearchInput = document.getElementById("globalSearchInput");
+        const globalClearSearchBtn = document.getElementById("globalClearSearchBtn");
+        const globalSearchStats = document.getElementById("globalSearchStats");
+        const stickySearch = document.getElementById("stickySearch");
+        
+        // Elementos del menú colapsable
+        const menuToggleBtn = document.getElementById("menuToggleBtn");
+        const closeMobileMenu = document.getElementById("closeMobileMenu");
+        const sidebarBackdrop = document.getElementById("sidebarBackdrop");
+
+        // Helper: Evitar XSS en salidas HTML
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+
+        // Sistema de notificaciones elegante
+        function showToast(message) {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = 'toast-notification';
+            toast.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-hover);"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                <span>${escapeHtml(message)}</span>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => toast.classList.add('show'), 50);
+
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 4000);
+        }
+
+        // Alternar visualización del menú lateral
+        function toggleSidebar() {
+            const isMobile = window.innerWidth <= 1024;
+            if (isMobile) {
+                // Comportamiento móvil: Drawer deslizante
+                const isOpen = appLayout.classList.toggle("sidebar-open");
+                if (isOpen) {
+                    sidebarBackdrop.classList.add("show");
+                    document.body.style.overflow = "hidden";
+                } else {
+                    sidebarBackdrop.classList.remove("show");
+                    document.body.style.overflow = "";
+                }
+            } else {
+                // Comportamiento de Escritorio: Mostrar/ocultar expandiendo clase
+                const isExpanded = appLayout.classList.toggle("sidebar-expanded");
+                if (isExpanded) {
+                    menuToggleBtn.classList.remove("collapsed");
+                } else {
+                    menuToggleBtn.classList.add("collapsed");
+                }
+            }
+        }
+
+        function closeSidebarMobile() {
+            appLayout.classList.remove("sidebar-open");
+            sidebarBackdrop.classList.remove("show");
+            document.body.style.overflow = "";
+        }
+
+        // Renderizar Asignaturas/Temas (Panel Lateral)
+        function renderSubjects() {
+            if (!materias.length) {
+                subjectsGrid.innerHTML = `
+                    <div style="padding: 20px; text-align: center; color: var(--text-muted); font-size:0.9rem;">
+                        ⚠️ No hay materias definidas.
+                    </div>`;
+                return;
+            }
+            subjectsGrid.innerHTML = "";
+            for (let materia of materias) {
+                const count = pdfs.filter(p => p.materia === materia).length;
+                const card = document.createElement("div");
+                card.className = "subject-card";
+                if (currentSubject === materia && !isGlobalSearch) {
+                    card.classList.add("active");
+                }
+                card.innerHTML = `
+                    <span class="subject-name">${escapeHtml(materia)}</span>
+                    <span class="subject-badge">${count} PDFs</span>
+                `;
+                card.addEventListener("click", () => {
+                    if (isGlobalSearch) {
+                        isGlobalSearch = false;
+                        currentSearchTerm = "";
+                        globalSearchInput.value = "";
+                        globalSearchStats.textContent = "0 documentos";
+                    }
+                    selectSubject(materia);
+                    if (window.innerWidth <= 1024) {
+                        closeSidebarMobile();
+                    }
+                });
+                subjectsGrid.appendChild(card);
+            }
+        }
+
+        // Seleccionar una materia
+        function selectSubject(subjectName) {
+            currentSubject = subjectName;
+            currentSubjectTitle.innerText = currentSubject;
+            isGlobalSearch = false;
+            currentSearchTerm = "";
+            globalSearchInput.value = "";
+            globalSearchStats.textContent = `${pdfs.length} total`;
+            renderSubjects();
+            renderPdfs();
+        }
+
+        // Renderizar Cuadrícula de Libros/Documentos
+        function renderPdfs() {
+            if (!currentSubject) {
+                pdfGridContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        <h4>Explora la Biblioteca</h4>
+                        <p>Haz clic en cualquiera de las categorías de materias del panel de la izquierda para cargar sus archivos.</p>
+                    </div>`;
+                pdfCountSpan.innerText = "0 documentos";
+                return;
+            }
+
+            const subjectPdfs = pdfs.filter(p => p.materia === currentSubject);
+            pdfCountSpan.innerText = `${subjectPdfs.length} ${subjectPdfs.length === 1 ? "documento" : "documentos"}`;
+            
+            if (subjectPdfs.length === 0) {
+                pdfGridContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        <h4>Carpeta vacía</h4>
+                        <p>No se encontraron PDFs disponibles en esta categoría.</p>
+                    </div>`;
+                return;
+            }
+            renderPdfCards(subjectPdfs, true);
+        }
+
+        // Realizar Búsqueda Global y Filtrado
+        function performGlobalSearch() {
+            const term = globalSearchInput.value.trim().toLowerCase();
+            currentSearchTerm = term;
+            
+            if (!term) {
+                if (isGlobalSearch) {
+                    isGlobalSearch = false;
+                    if (currentSubject) {
+                        renderPdfs();
+                        currentSubjectTitle.innerText = currentSubject;
+                        globalSearchStats.textContent = `${pdfs.length} total`;
+                    } else {
+                        pdfGridContainer.innerHTML = `
+                            <div class="empty-state">
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                                <h4>Selecciona un tema</h4>
+                                <p>Explora las materias o introduce una búsqueda en el cuadro superior.</p>
+                            </div>`;
+                        pdfCountSpan.innerText = "0 documentos";
+                    }
+                    renderSubjects();
+                }
+                return;
+            }
+
+            isGlobalSearch = true;
+            
+            // Filtro avanzado buscando coincidencias en nombre, materia o descripción
+            const filtered = pdfs.filter(p => 
+                p.nombre.toLowerCase().includes(term) || 
+                p.materia.toLowerCase().includes(term) ||
+                (p.descripcion && p.descripcion.toLowerCase().includes(term))
+            );
+
+            globalSearchStats.textContent = `${filtered.length} encontrados`;
+            
+            if (filtered.length === 0) {
+                pdfGridContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                        <h4>Sin resultados</h4>
+                        <p>No encontramos coincidencias para "${escapeHtml(term)}". Intenta usar otra palabra clave.</p>
+                    </div>`;
+                pdfCountSpan.innerText = "0 resultados";
+            } else {
+                renderPdfCards(filtered, false);
+                pdfCountSpan.innerText = `${filtered.length} ${filtered.length === 1 ? "resultado" : "resultados"}`;
+            }
+
+            currentSubjectTitle.innerText = `Búsqueda: "${escapeHtml(term)}"`;
+            
+            // Deseleccionar temporalmente estados visuales de navegación de temas
+            document.querySelectorAll('.subject-card').forEach(card => card.classList.remove('active'));
+        }
+
+        // Renderizado de las tarjetas individuales en la cuadrícula
+        function renderPdfCards(pdfList, showSubject = false) {
+            pdfGridContainer.innerHTML = "";
+            pdfList.forEach((pdf, index) => {
+                const card = document.createElement("div");
+                card.className = "pdf-card";
+                card.style.animationDelay = `${index * 0.04}s`;
+                
+                let metaHtml = `
+                    <div class="pdf-date">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        <span>Estudio</span>
+                    </div>
+                `;
+                
+                if (!showSubject) {
+                    metaHtml += `
+                        <span class="pdf-subject-badge">${escapeHtml(pdf.materia)}</span>
+                    `;
+                } else {
+                    metaHtml += `
+                        <span class="pdf-subject-badge">Agronomía</span>
+                    `;
+                }
+
+                card.innerHTML = `
+                    <div class="pdf-icon-wrapper">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <div class="pdf-title" title="${escapeHtml(pdf.nombre)}">${escapeHtml(pdf.nombre)}</div>
+                    <div class="pdf-description">${escapeHtml(pdf.descripcion || "Sin descripción adicional disponible.")}</div>
+                    <div class="pdf-meta">${metaHtml}</div>
+                `;
+
+                // Apertura y acción del PDF
+                card.addEventListener("click", (e) => {
+                    e.stopPropagation();
+                    const url = pdf.url;
+                    if (url && url !== '#') {
+                        window.open(url, '_blank');
+                    } else {
+                        showToast(`El documento "${pdf.nombre}" es un ejemplo de demostración.`);
+                    }
+                });
+                pdfGridContainer.appendChild(card);
+            });
+        }
+
+        // Limpiar el cuadro de búsqueda
+        function clearGlobalSearch() {
+            globalSearchInput.value = "";
+            currentSearchTerm = "";
+            globalSearchStats.textContent = `${pdfs.length} total`;
+            globalSearchInput.focus();
+            
+            if (isGlobalSearch) {
+                isGlobalSearch = false;
+                if (currentSubject) {
+                    renderPdfs();
+                    currentSubjectTitle.innerText = currentSubject;
+                    renderSubjects();
+                } else {
+                    pdfGridContainer.innerHTML = `
+                        <div class="empty-state">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline></svg>
+                            <h4>Selecciona una materia</h4>
+                            <p>Elige un tema lateral para listar sus libros correspondientes.</p>
+                        </div>`;
+                    pdfCountSpan.innerText = "0 documentos";
+                    currentSubjectTitle.innerText = "Selecciona una materia";
+                }
+            }
+        }
+
+        // Sombra de scroll dinámico
+        window.addEventListener('scroll', () => {
+            if (window.scrollY > 20) {
+                stickySearch.style.boxShadow = '0 10px 30px -10px rgba(15, 23, 42, 0.1)';
+                stickySearch.style.borderBottomColor = 'rgba(226, 232, 240, 1)';
+            } else {
+                stickySearch.style.boxShadow = 'none';
+                stickySearch.style.borderBottomColor = 'rgba(226, 232, 240, 0.8)';
+            }
+        });
+
+        // Inicialización
+        function init() {
+            globalSearchStats.textContent = `${pdfs.length} total`;
+            if (materias.length) {
+                selectSubject(materias[0]);
+            } else {
+                currentSubjectTitle.innerText = "Biblioteca vacía";
+                pdfGridContainer.innerHTML = `
+                    <div class="empty-state">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                        <h4>No hay asignaturas registradas</h4>
+                        <p>Comienza agregando elementos al array de materias en el script principal.</p>
+                    </div>`;
+            }
+            renderSubjects();
+            
+            // Listeners de eventos
+            globalSearchInput.addEventListener('input', performGlobalSearch);
+            globalClearSearchBtn.addEventListener('click', clearGlobalSearch);
+            
+            // Eventos de control de colapso / sidebar
+            menuToggleBtn.addEventListener('click', toggleSidebar);
+            closeMobileMenu.addEventListener('click', closeSidebarMobile);
+            sidebarBackdrop.addEventListener('click', closeSidebarMobile);
+
+            window.addEventListener('resize', () => {
+                if (window.innerWidth > 1024) {
+                    closeSidebarMobile();
+                }
+            });
+        }
+
+        init();
+    </script>
+</body>
+</html>

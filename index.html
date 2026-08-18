@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Difusión Técnica y Agronómica</title>
+    <!-- Google Fonts para una tipografía ultra limpia de nivel premium -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        /* Variables de diseño unificadas con la biblioteca y fichas técnicas */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            --header-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --primary: #f97316;
+            --primary-hover: #ea580c;
+            --primary-light: rgba(249, 115, 22, 0.08);
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: rgba(226, 232, 240, 0.8);
+            --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
+            --shadow-lg: 0 20px 40px -10px rgba(15, 23, 42, 0.1);
+            --transition-smooth: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navegación de alto contraste */
+        .navbar {
+            background: var(--header-gradient);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: -0.025em;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            border-radius: 8px;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.08);
+        }
+
+        /* Hero Banner Rediseñado con Aspecto Ejecutivo */
+        .hero {
+            background: var(--header-gradient);
+            color: white;
+            padding: 6.5rem 2rem 5.5rem 2rem;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.1);
+            text-align: center;
+        }
+
+        /* Efecto de luminosidad decorativo en background */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            right: -10%;
+            width: 600px;
+            height: 600px;
+            background: radial-gradient(circle, rgba(249,115,22,0.12) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero::after {
+            content: '';
+            position: absolute;
+            bottom: -50%;
+            left: -10%;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(249,115,22,0.06) 0%, rgba(255,255,255,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-content {
+            max-width: 900px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.06);
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            padding: 8px 18px;
+            border-radius: 99px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: #cbd5e1;
+            margin-bottom: 2rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .hero-badge span {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background-color: var(--primary);
+            border-radius: 50%;
+            animation: pulse 1.8s infinite;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(249, 115, 22, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(249, 115, 22, 0); }
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -0.03em;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, #ffffff 0%, #cbd5e1 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            color: #94a3b8;
+            max-width: 760px;
+            margin: 0 auto 2.5rem auto;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            transition: var(--transition-smooth);
+            box-shadow: 0 4px 14px rgba(249, 115, 22, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-hover);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(249, 115, 22, 0.4);
+        }
+
+        .btn-secondary {
+            background: rgba(255, 255, 255, 0.08);
+            color: white;
+            text-decoration: none;
+            padding: 14px 28px;
+            border-radius: 12px;
+            font-weight: 700;
+            font-size: 0.95rem;
+            border: 1px solid rgba(255, 255, 255, 0.15);
+            transition: var(--transition-smooth);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255, 255, 255, 0.15);
+            transform: translateY(-2px);
+        }
+
+        /* Estadísticas e Indicadores Clave */
+        .stats-section {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1.5rem;
+            max-width: 1200px;
+            margin: -3rem auto 0 auto;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 10;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 18px;
+            border: 1px solid var(--card-border);
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: var(--shadow-md);
+            transition: var(--transition-smooth);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .stat-number {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 2px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 4px;
+        }
+
+        .stat-number span {
+            color: var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        /* Secciones de Contenido */
+        .container {
+            max-width: 1200px;
+            margin: 5rem auto;
+            padding: 0 2rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            letter-spacing: -0.03em;
+            text-align: center;
+        }
+
+        .section-subtitle {
+            font-size: 1rem;
+            color: var(--text-muted);
+            text-align: center;
+            max-width: 600px;
+            margin: 0 auto 3.5rem auto;
+            font-weight: 500;
+        }
+
+        /* Regiones Rediseñadas */
+        .regions {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 2rem;
+        }
+
+        .region-card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            border: 1px solid var(--card-border);
+            padding: 2.5rem;
+            transition: var(--transition-smooth);
+            box-shadow: var(--shadow-sm);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .region-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 4px;
+            height: 100%;
+            background: var(--primary);
+            opacity: 0;
+            transition: var(--transition-smooth);
+        }
+
+        .region-card:hover {
+            transform: translateY(-6px);
+            border-color: #cbd5e1;
+            box-shadow: var(--shadow-lg);
+        }
+
+        .region-card:hover::after {
+            opacity: 1;
+        }
+
+        .region-icon {
+            font-size: 2.25rem;
+            background: var(--primary-light);
+            width: 60px;
+            height: 60px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .region-card h3 {
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            letter-spacing: -0.01em;
+        }
+
+        .region-card p {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            flex: 1;
+        }
+
+        .region-link {
+            font-size: 0.85rem;
+            font-weight: 700;
+            color: var(--primary);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            transition: var(--transition-smooth);
+        }
+
+        .region-link:hover {
+            color: var(--primary-hover);
+            transform: translateX(4px);
+        }
+
+        /* Características de la Plataforma */
+        .features-section {
+            background: #ffffff;
+            border-top: 1px solid #e2e8f0;
+            border-bottom: 1px solid #e2e8f0;
+            padding: 5rem 0;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2.5rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 2rem;
+        }
+
+        .feature-box {
+            display: flex;
+            gap: 1.25rem;
+            align-items: flex-start;
+        }
+
+        .feature-icon-wrapper {
+            background: var(--primary-light);
+            color: var(--primary);
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+        }
+
+        .feature-text h4 {
+            font-size: 1.1rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+        }
+
+        .feature-text p {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            line-height: 1.6;
+        }
+
+        /* Pie de Página Institucional */
+        footer {
+            background: #0f172a;
+            color: #94a3b8;
+            padding: 5rem 2rem 3rem 2rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            gap: 4rem;
+            margin-bottom: 4rem;
+        }
+
+        .footer-brand h4 {
+            color: white;
+            font-size: 1.25rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+        }
+
+        .footer-brand p {
+            font-size: 0.9rem;
+            line-height: 1.7;
+            max-width: 320px;
+        }
+
+        .footer-links h5 {
+            color: white;
+            font-size: 0.9rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 1.25rem;
+        }
+
+        .footer-links ul {
+            list-style: none;
+        }
+
+        .footer-links ul li {
+            margin-bottom: 0.75rem;
+        }
+
+        .footer-links ul li a {
+            color: #94a3b8;
+            text-decoration: none;
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+        }
+
+        .footer-links ul li a:hover {
+            color: white;
+            padding-left: 4px;
+        }
+
+        .footer-bottom {
+            max-width: 1200px;
+            margin: 0 auto;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding-top: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            font-size: 0.85rem;
+        }
+
+        /* Responsividad Extrema */
+        @media (max-width: 968px) {
+            .footer-content {
+                grid-template-columns: 1fr;
+                gap: 2.5rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.4rem;
+            }
+            .hero p {
+                font-size: 1.05rem;
+            }
+            .navbar {
+                padding: 1rem;
+            }
+            .container {
+                margin: 3.5rem auto;
+            }
+            .stats-section {
+                margin-top: -2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Menú de Navegación Profesional -->
+    <nav class="navbar">
+        <a href="index.html" class="logo">
+            🌾 Agro<span>Emprendimiento</span>
+        </a>
+        <div class="nav-links">
+            <a href="cultivos.html">Cultivos</a>
+            <a href="enfermedades.html">Enfermedades</a>
+            <a href="biblioteca_digital_de_agronom_a.html">Biblioteca</a>
+        </div>
+    </nav>
+
+    <!-- Banner Hero de Alta Gama -->
+    <div class="hero">
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span></span> Ciencia y Tecnología Agrícola
+            </div>
+            <h1>Investigación y Monitoreo Agrónomo</h1>
+            <p>
+                Impulsamos la soberanía alimentaria y la productividad agropecuaria del Ecuador 
+                mediante la centralización de datos técnicos oficiales, fichas fitosanitarias de última generación y guías de cultivo.
+            </p>
+            <div class="hero-buttons">
+                <a href="cultivos.html" class="btn-primary">Explorar Cultivos</a>
+                <a href="biblioteca_digital_de_agronom_a.html" class="btn-secondary">Biblioteca Virtual</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Cifras e Indicadores Clave -->
+    <div class="stats-section">
+        <div class="stat-card">
+            <div class="stat-number">3</div>
+            <div class="stat-label">Regiones Naturales</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">+24</div>
+            <div class="stat-label">Cultivos Monitoreados</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-number">100%</div>
+            <div class="stat-label">Libre y Gratuito</div>
+        </div>
+    </div>
+
+    <!-- Regiones Productivas -->
+    <div class="container" id="regiones">
+        <h2 class="section-title">Regiones Agroecológicas del Ecuador</h2>
+        <p class="section-subtitle">
+            El perfil altitudinal y geográfico del país crea microclimas idóneos para una oferta productiva diversa y de calidad exportadora.
+        </p>
+        
+        <div class="regions">
+            <!-- Costa -->
+            <div class="region-card">
+                <div class="region-icon">🌊</div>
+                <h3>Litoral o Costa</h3>
+                <p>
+                    Valles aluviales de alta fertilidad. Se caracteriza por un clima cálido tropical, perfecto para la siembra a gran escala de banano de exportación, cacao fino de aroma, arroz y maíz amarillo duro.
+                </p>
+                <a href="cultivos.html" class="region-link">
+                    Ver cultivos asociados
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
+
+            <!-- Sierra -->
+            <div class="region-card">
+                <div class="region-icon">⛰️</div>
+                <h3>Interandina o Sierra</h3>
+                <p>
+                    Suelos andisoles ricos en materia orgánica de origen volcánico. Su altitud propicia el cultivo de cereales de grano templado, papa andina, hortalizas frescas y frutales de altura.
+                </p>
+                <a href="cultivos.html" class="region-link">
+                    Ver cultivos asociados
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
+
+            <!-- Amazonía -->
+            <div class="region-card">
+                <div class="region-icon">🌳</div>
+                <h3>Amazonía u Oriente</h3>
+                <p>
+                    Ecosistema húmedo tropical caracterizado por sistemas agroforestales tradicionales (Chakras). Destaca por la producción de cacao nativo, yuca, café robusta y especies maderables y medicinales.
+                </p>
+                <a href="cultivos.html" class="region-link">
+                    Ver cultivos asociados
+                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Sección de Funciones Clave / Features -->
+    <div class="features-section">
+        <div class="features-grid">
+            <!-- Feature 1 -->
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"></path><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"></path></svg>
+                </div>
+                <div class="feature-text">
+                    <h4>Biblioteca Digital</h4>
+                    <p>Acceso a manuales, libros y PDFs especializados para estudiantes de agronomía e investigadores de campo.</p>
+                </div>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></svg>
+                </div>
+                <div class="feature-text">
+                    <h4>Manejo de Enfermedades</h4>
+                    <p>Sintomatología clara, guías de prevención y programas de manejo de fitopatógenos locales.</p>
+                </div>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="feature-box">
+                <div class="feature-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                </div>
+                <div class="feature-text">
+                    <h4>Información de Soporte</h4>
+                    <p>Compilación y análisis técnico estructurado a partir de bases científicas e institucionales del país.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pie de Página Corporativo / Académico -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-brand">
+                <h4>AgroEcuador</h4>
+                <p>
+                    Portal independiente dedicado a la recopilación y difusión de conocimiento agronómico enfocado en la agricultura sustentable en territorio ecuatoriano.
+                </p>
+            </div>
+            <div class="footer-links">
+                <h5>Contenido</h5>
+                <ul>
+                    <li><a href="cultivos.html">Guía de Cultivos</a></li>
+                    <li><a href="enfermedades.html">Control Sanitario</a></li>
+                    <li><a href="biblioteca_digital_de_agronom_a.html">Biblioteca de PDFs</a></li>
+                </ul>
+            </div>
+            <div class="footer-links">
+                <h5>Referencias</h5>
+                <ul>
+                    <li><a href="https://www.iniap.gob.ec" target="_blank" rel="noopener">INIAP</a></li>
+                    <li><a href="https://www.agricultura.gob.ec" target="_blank" rel="noopener">MAG</a></li>
+                    <li><a href="https://www.fao.org" target="_blank" rel="noopener">FAO Ecuador</a></li>
+                </ul>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 AgroEcuador - Desarrollo Tecnológico y Difusión Agronómica de Campo.</p>
+            <p>Desarrollado bajo estándares académicos para la consulta y apoyo del agricultor.</p>
+        </div>
+    </footer>
+
+</body>
+</html>

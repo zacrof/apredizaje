@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AgroEcuador - Control de Enfermedades</title>
+    <!-- Google Fonts para una tipografía ultra limpia -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Variables de diseño unificadas con la biblioteca */
+        :root {
+            --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 100%);
+            --header-gradient: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            --primary: #f97316;
+            --primary-hover: #ea580c;
+            --primary-light: rgba(249, 115, 22, 0.08);
+            --text-dark: #0f172a;
+            --text-muted: #64748b;
+            --card-bg: #ffffff;
+            --card-border: rgba(226, 232, 240, 0.8);
+            --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.04);
+            --shadow-md: 0 10px 25px -5px rgba(15, 23, 42, 0.06);
+            --shadow-lg: 0 20px 40px -10px rgba(15, 23, 42, 0.1);
+            --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-dark);
+            line-height: 1.6;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* Navegación */
+        .navbar {
+            background: var(--header-gradient);
+            padding: 1.25rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 1rem;
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.15);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        .logo {
+            font-size: 1.6rem;
+            font-weight: 800;
+            color: #ffffff;
+            text-decoration: none;
+            letter-spacing: -0.025em;
+        }
+
+        .logo span {
+            color: var(--primary);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: #cbd5e1;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: var(--transition-smooth);
+        }
+
+        .nav-links a:hover, .nav-links a.active {
+            color: #ffffff;
+        }
+
+        /* Contenedor Split Maestro-Detalle */
+        .app-container {
+            max-width: 1400px;
+            margin: 2rem auto;
+            padding: 0 2rem;
+            display: grid;
+            grid-template-columns: 360px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 120px);
+            min-height: 600px;
+        }
+
+        /* PANEL MAESTRO (Izquierdo) */
+        .master-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        .master-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid #f1f5f9;
+            background: #fafbfc;
+        }
+
+        .master-header h2 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            letter-spacing: -0.02em;
+        }
+
+        /* Buscador */
+        .search-box-wrapper {
+            position: relative;
+        }
+
+        .search-box-wrapper input {
+            width: 100%;
+            padding: 12px 16px 12px 46px;
+            border: 1.5px solid #e2e8f0;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: var(--text-dark);
+            background: #ffffff;
+            outline: none;
+            transition: var(--transition-smooth);
+        }
+
+        .search-box-wrapper input:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            pointer-events: none;
+        }
+
+        /* Lista de Enfermedades */
+        .master-list {
+            flex: 1;
+            overflow-y: auto;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        /* Item de Lista */
+        .list-item {
+            display: flex;
+            flex-direction: column;
+            padding: 1rem;
+            background: #ffffff;
+            border: 1px solid var(--card-border);
+            border-radius: 14px;
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            text-align: left;
+        }
+
+        .list-item:hover {
+            border-color: #cbd5e1;
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .list-item.active {
+            background: var(--header-gradient);
+            border-color: #0f172a;
+            color: white;
+            box-shadow: var(--shadow-md);
+        }
+
+        .list-item-title {
+            font-weight: 700;
+            font-size: 0.95rem;
+            margin-bottom: 4px;
+        }
+
+        .list-item-subtitle {
+            font-size: 0.75rem;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .list-item.active .list-item-subtitle {
+            color: #cbd5e1;
+        }
+
+        /* PANEL DETALLE (Ficha Fitopatológica) */
+        .detail-panel {
+            background: var(--card-bg);
+            border-radius: 20px;
+            border: 1px solid var(--card-border);
+            box-shadow: var(--shadow-md);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            height: 100%;
+            position: relative;
+        }
+
+        /* Cabecera */
+        .detail-header {
+            padding: 2rem;
+            border-bottom: 1px solid #f1f5f9;
+            background: linear-gradient(to right, #fafbfc, #ffffff);
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 1rem;
+        }
+
+        .detail-header-info h1 {
+            font-size: 1.8rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            letter-spacing: -0.03em;
+            margin-bottom: 4px;
+        }
+
+        .scientific-name {
+            font-size: 1rem;
+            font-style: italic;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .badge-crop {
+            background: #fee2e2;
+            color: #991b1b;
+            padding: 6px 14px;
+            border-radius: 10px;
+            font-size: 0.8rem;
+            font-weight: 700;
+            letter-spacing: 0.05em;
+        }
+
+        /* Pestañas */
+        .detail-tabs {
+            display: flex;
+            background: #f8fafc;
+            padding: 0 2rem;
+            border-bottom: 1px solid #f1f5f9;
+            overflow-x: auto;
+            gap: 1.5rem;
+        }
+
+        .tab-btn {
+            padding: 1.25rem 0;
+            background: none;
+            border: none;
+            border-bottom: 3px solid transparent;
+            font-family: inherit;
+            font-size: 0.9rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+            white-space: nowrap;
+        }
+
+        .tab-btn:hover {
+            color: var(--text-dark);
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--primary);
+        }
+
+        /* Cuerpo */
+        .detail-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 2.5rem;
+            background: #ffffff;
+        }
+
+        /* Secciones */
+        .technical-section {
+            animation: fadeIn 0.3s ease forwards;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .technical-section h3 {
+            font-size: 1.25rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+            border-left: 4px solid var(--primary);
+            padding-left: 12px;
+        }
+
+        .technical-section p {
+            color: #334155;
+            font-size: 1rem;
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        /* Cuadrícula interna */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .info-card-box {
+            background: #fff8f6;
+            border: 1px solid #fecdd3;
+            border-radius: 12px;
+            padding: 1.25rem;
+        }
+
+        .info-card-box h4 {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #991b1b;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            margin-bottom: 6px;
+        }
+
+        .info-card-box p {
+            font-size: 0.9rem;
+            color: #4f4f4f;
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        /* Botón atrás móvil */
+        .back-to-list-btn {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            background: #f1f5f9;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 10px;
+            font-weight: 700;
+            font-size: 0.85rem;
+            color: var(--text-dark);
+            cursor: pointer;
+            margin-bottom: 1rem;
+        }
+
+        @media (max-width: 968px) {
+            .app-container {
+                grid-template-columns: 1fr;
+                height: auto;
+                padding: 0 1rem;
+                margin: 1.5rem auto;
+            }
+
+            .master-panel {
+                height: 500px;
+            }
+
+            .detail-panel {
+                display: none;
+                height: 80vh;
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                z-index: 2000;
+                border-radius: 0;
+            }
+
+            .detail-panel.active-mobile {
+                display: flex;
+            }
+
+            .back-to-list-btn {
+                display: inline-flex;
+            }
+
+            .detail-header {
+                padding: 1.5rem;
+            }
+
+            .detail-tabs {
+                padding: 0 1.5rem;
+            }
+
+            .detail-body {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <nav class="navbar">
+        <a href="index.html" class="logo">Agro<span>Ecuador</span></a>
+        <div class="nav-links">
+            <a href="cultivos.html">Cultivos</a>
+            <a href="enfermedades.html" class="active">Enfermedades</a>
+            <a href="biblioteca_digital_de_agronom_a.html">Biblioteca</a>
+        </div>
+    </nav>
+
+    <div class="app-container" id="appContainer">
+        <!-- PANEL MAESTRO (Listado Izquierdo) -->
+        <div class="master-panel" id="masterPanel">
+            <div class="master-header">
+                <h2>Control de Enfermedades</h2>
+                <div class="search-box-wrapper">
+                    <div class="search-icon">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                    </div>
+                    <input type="text" id="searchInput" placeholder="Filtrar por enfermedad u hospedante...">
+                </div>
+            </div>
+            <div class="master-list" id="masterList">
+                <!-- Se inyecta por JavaScript -->
+            </div>
+        </div>
+
+        <!-- PANEL DETALLE (Ficha Técnica Derecha) -->
+        <div class="detail-panel" id="detailPanel">
+            <!-- Cargado dinámicamente -->
+        </div>
+    </div>
+
+    <script>
+        // ===================== BASE DE DATOS DE ENFERMEDADES =====================
+        const enfermedadesArray = [
+            {
+                id: "sigatoka",
+                nombre: "Sigatoka Negra",
+                cientifico: "Mycosphaerella fijiensis Morelet",
+                hospedante: "Banano",
+                resumen: "Es la enfermedad foliar más destructiva y económicamente importante en el cultivo de banano en todo el Ecuador. Ataca los tejidos foliares verdes reduciendo severamente la capacidad fotosintética, lo que deriva en pérdidas del peso del racimo y una maduración prematura del fruto durante su transporte internacional.",
+                sintomas: "Inicia con diminutos puntos decolorados (pizcas) en el envés de las hojas 2, 3 o 4. Estas pizcas se alargan formando rayas de color marrón rojizo paralelas a las venas. Posteriormente, las rayas se expanden hasta convertirse en manchas elípticas negras con un centro gris seco y un halo amarillo característico, coalesciendo hasta secar por completo la hoja.",
+                prevencion: "Se basa fundamentalmente en el control del microclima del lote. Esto incluye el deshoje semanal estricto (eliminación de tejido quemado), mantenimiento impecable de canales de drenaje para reducir la humedad relativa interna del aire, un control riguroso de malezas altas y un espaciamiento óptimo entre plantas.",
+                tratamiento: "Uso de un programa de rotación química sistemático para evitar resistencias. Incluye la aspersión aérea coordinada de fungicidas sistémicos (triazoles, estrobilerinas) combinados con fungicidas de contacto (mancozeb) diluidos en aceite agrícola portador."
+            },
+            {
+                id: "monilia",
+                nombre: "Moniliasis del Cacao",
+                cientifico: "Moniliophthora roreri",
+                hospedante: "Cacao",
+                resumen: "Hongo patógeno invasivo de gran impacto en las plantaciones de cacao ecuatorianas. El patógeno ingresa por las partes jóvenes de la planta y ataca específicamente a la mazorca de cacao en desarrollo, destruyendo completamente las almendras internas.",
+                sintomas: "En frutos jóvenes, provoca deformaciones (jorobas) y manchas cloróticas amarillentas anormales en el exterior de la cáscara verde. Con el avance de la infección, aparece una mancha de color café oscuro brillante que se cubre rápidamente de un polvo blanquecino-crema muy fino y denso (esporas del hongo). Internamente, las semillas y el mucílago se pudren licuándose por completo.",
+                prevencion: "La poda de aireación es la herramienta preventiva reina; permite regular el exceso de humedad bajo la copa de los árboles. Adicionalmente, se requiere remover de forma semanal todos los frutos enfermos y enterrarlos bajo la hojarasca antes de que el hongo libere su polvo blanco.",
+                tratamiento: "En la actualidad, no existe un control químico altamente rentable y exclusivo para Monilia. Se priorizan los fungicidas a base de cobre (caldo bordelés u oxicloruro de cobre) aplicados directamente sobre las estructuras florales y frutos en formación en épocas de alta lluvia."
+            },
+            {
+                id: "tizon_tardio",
+                nombre: "Tizón Tardío",
+                cientifico: "Phytophthora infestans",
+                hospedante: "Papa",
+                resumen: "La enfermedad más temida por los paperos de la Sierra. Bajo condiciones climáticas de frío húmedo o lloviznas persistentes, este oomiceto es capaz de devastar parcelas completas de papa en menos de una semana, atacando tanto el follaje aéreo como los tubérculos en el suelo.",
+                sintomas: "Aparecen manchas irregulares necróticas de aspecto húmedo en los bordes de las hojas, de color verde oscuro a marrón. En condiciones húmedas, aparece un moho blanquecino velloso en el envés de la hoja correspondiente a las áreas de necrosis. Los tallos se vuelven quebradizos con manchas negras, y los tubérculos cosechados presentan una pudrición seca de color rojizo-marrón.",
+                prevencion: "Uso exclusivo de semilla de papa certificada y libre del patógeno. Implementar aporques altos y firmes para aislar físicamente los tubérculos del contacto de las esporas arrastradas por la lluvia desde las hojas. Realizar rotación estricta de cultivos.",
+                tratamiento: "Monitoreo del clima para aplicaciones preventivas de fungicidas de contacto (como Mancozeb o Clorotalonil) antes del cierre de calles foliar. Ante brotes ya activos en campo, se debe aplicar fungicidas sistémicos curativos con ingredientes activos como el Metalaxil-M o Cymoxanil."
+            }
+        ];
+
+        // Estado
+        let activeDiseaseId = enfermedadesArray[0].id;
+        let activeTab = "resumen";
+
+        // DOM
+        const masterList = document.getElementById("masterList");
+        const searchInput = document.getElementById("searchInput");
+        const detailPanel = document.getElementById("detailPanel");
+
+        // Inicialización
+        document.addEventListener("DOMContentLoaded", () => {
+            renderList(enfermedadesArray);
+            showDetail(activeDiseaseId);
+            
+            // Evento de búsqueda
+            searchInput.addEventListener("input", () => {
+                const term = searchInput.value.toLowerCase().trim();
+                const filtered = enfermedadesArray.filter(d => 
+                    d.nombre.toLowerCase().includes(term) || 
+                    d.hospedante.toLowerCase().includes(term)
+                );
+                renderList(filtered);
+            });
+        });
+
+        // Renderizar Lista
+        function renderList(list) {
+            masterList.innerHTML = "";
+            if (list.length === 0) {
+                masterList.innerHTML = `
+                    <div style="text-align: center; padding: 2rem; color: var(--text-muted); font-size: 0.9rem;">
+                        No se encontraron enfermedades.
+                    </div>`;
+                return;
+            }
+
+            list.forEach(item => {
+                const div = document.createElement("div");
+                div.className = `list-item ${item.id === activeDiseaseId ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="list-item-title">${escapeHtml(item.nombre)}</div>
+                    <div class="list-item-subtitle">Hospedante: ${escapeHtml(item.hospedante)}</div>
+                `;
+                div.addEventListener("click", () => {
+                    activeDiseaseId = item.id;
+                    document.querySelectorAll('.list-item').forEach(el => el.classList.remove('active'));
+                    div.classList.add('active');
+                    
+                    showDetail(item.id);
+
+                    if (window.innerWidth <= 968) {
+                        detailPanel.classList.add("active-mobile");
+                    }
+                });
+                masterList.appendChild(div);
+            });
+        }
+
+        // Mostrar Detalle de Enfermedad
+        function showDetail(id) {
+            const disease = enfermedadesArray.find(d => d.id === id);
+            if (!disease) {
+                detailPanel.innerHTML = `<div class="empty-state"><h3>No se cargaron los datos</h3></div>`;
+                return;
+            }
+
+            detailPanel.innerHTML = `
+                <div class="detail-header">
+                    <div class="detail-header-info">
+                        <button class="back-to-list-btn" id="backBtn">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"></line><polyline points="12 19 5 12 12 5"></polyline></svg>
+                            Volver al listado
+                        </button>
+                        <h1>${escapeHtml(disease.nombre)}</h1>
+                        <div class="scientific-name">Agente: ${escapeHtml(disease.cientifico)}</div>
+                    </div>
+                    <span class="badge-crop">Hospedante: ${escapeHtml(disease.hospedante)}</span>
+                </div>
+                
+                <div class="detail-tabs">
+                    <button class="tab-btn ${activeTab === 'resumen' ? 'active' : ''}" data-tab="resumen">Descripción</button>
+                    <button class="tab-btn ${activeTab === 'sintomas' ? 'active' : ''}" data-tab="sintomas">Sintomatología</button>
+                    <button class="tab-btn ${activeTab === 'prevencion' ? 'active' : ''}" data-tab="prevencion">Control Preventivo</button>
+                    <button class="tab-btn ${activeTab === 'tratamiento' ? 'active' : ''}" data-tab="tratamiento">Manejo Químico/Curativo</button>
+                </div>
+
+                <div class="detail-body" id="detailBody">
+                    <!-- Contenido cambiante -->
+                </div>
+            `;
+
+            // Asignar listeners a pestañas
+            const tabBtns = detailPanel.querySelectorAll(".tab-btn");
+            tabBtns.forEach(btn => {
+                btn.addEventListener("click", () => {
+                    tabBtns.forEach(b => b.classList.remove("active"));
+                    btn.classList.add("active");
+                    activeTab = btn.getAttribute("data-tab");
+                    renderTabContent(disease, activeTab);
+                });
+            });
+
+            // Listener botón atrás móviles
+            const backBtn = detailPanel.querySelector("#backBtn");
+            backBtn.addEventListener("click", () => {
+                detailPanel.classList.remove("active-mobile");
+            });
+
+            renderTabContent(disease, activeTab);
+        }
+
+        // Renderizar Pestaña Interna
+        function renderTabContent(disease, tab) {
+            const container = document.getElementById("detailBody");
+            container.innerHTML = "";
+
+            const div = document.createElement("div");
+            div.className = "technical-section";
+
+            if (tab === "resumen") {
+                div.innerHTML = `
+                    <h3>Ficha Descriptiva del Patógeno</h3>
+                    <p>${disease.resumen}</p>
+                    <div style="background: #fafbfc; border: 1px solid var(--card-border); padding: 1.25rem; border-radius: 12px; margin-top: 1.5rem;">
+                        <span style="font-weight: 800; color: #991b1b; display:block; margin-bottom: 0.5rem; font-size: 0.95rem;">⚠️ Diagnóstico Oportuno</span>
+                        <p style="font-size: 0.9rem; color: var(--text-muted); margin-bottom: 0;">Un diagnóstico temprano basado en síntomas iniciales evita aplicaciones tardías ineficientes que elevan los costos del agricultor.</p>
+                    </div>
+                `;
+            } else if (tab === "sintomas") {
+                div.innerHTML = `
+                    <h3>Cuadro de Sintomatología en el Hospedante</h3>
+                    <p>${disease.sintomas}</p>
+                `;
+            } else if (tab === "prevencion") {
+                div.innerHTML = `
+                    <h3>Labores Culturales y Prevención</h3>
+                    <p>${disease.prevencion}</p>
+                    <div style="display: flex; gap: 1rem; background: #fffbeb; border-radius: 12px; border: 1.5px solid #fef3c7; padding: 1rem; align-items: flex-start; margin-top: 1.5rem;">
+                        <span style="font-size: 1.5rem;">💡</span>
+                        <p style="font-size: 0.85rem; color: #92400e; margin: 0; font-weight: 600;">El control cultural correcto reduce hasta un 60% la necesidad de aspersiones químicas directas sobre el lote.</p>
+                    </div>
+                `;
+            } else if (tab === "tratamiento") {
+                div.innerHTML = `
+                    <h3>Estrategias de Control y Tratamientos de Emergencia</h3>
+                    <p>${disease.tratamiento}</p>
+                `;
+            }
+
+            container.appendChild(div);
+        }
+
+        // Helper anti-inyecciones
+        function escapeHtml(str) {
+            if (!str) return '';
+            return str.replace(/[&<>]/g, m => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' }[m]));
+        }
+    </script>
+</body>
+</html>
